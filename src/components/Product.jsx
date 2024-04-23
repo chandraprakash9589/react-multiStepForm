@@ -10,24 +10,25 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-
 function ProductList({ formData, onNext }) {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch("https://dummyjson.com/products")
       .then((response) => response.json())
       .then((data) => {
         const mappedProducts = data?.products?.map((product) => ({
           id: product.id,
-          name: product.brand,
+          title: product.title,
         }));
         setProducts(mappedProducts);
       });
+  };
+  useEffect(() => {
+    fetchData();
   }, []);
-
   const handleSelection = (productId) => {
     const index = selectedProducts.indexOf(productId);
     if (index === -1) {
@@ -65,7 +66,7 @@ function ProductList({ formData, onNext }) {
                 onChange={() => handleSelection(product.id)}
               />
             </ListItemIcon>
-            <ListItemText primary={product.name} /> {/* Display product name */}
+            <ListItemText primary={product.title} />
           </ListItem>
         ))}
       </List>

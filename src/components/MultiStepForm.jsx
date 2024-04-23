@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PersonalInfo from "./PersonalInfo";
 import ProductList from "./Product";
 import SubmitForm from "./SummitForm";
-
 
 const MultiStepForm = () => {
   const [formData, setFormData] = useState({});
@@ -14,15 +13,17 @@ const MultiStepForm = () => {
     setFormData(data);
   };
 
-  const handleStep2Next = (selectedProducts, products) => { // Receive products from Step2
+  const handleStep2Next = (selectedProducts, products) => {
     setSelectedProducts(selectedProducts);
-    setProducts(products); // Set products state
+    setProducts(products);
   };
-
   const handleFormSubmit = () => {
-    console.log("Form submitted:", formData, selectedProducts);
+    const selectedProductsData = selectedProducts.map((productId) => {
+      const product = products.find((p) => p.id === productId);
+      return { id: productId, title: product.title };
+    });
+    console.log("Form submitted:", formData, selectedProductsData);
   };
-
   return (
     <Router>
       <Routes>
@@ -37,7 +38,7 @@ const MultiStepForm = () => {
             <SubmitForm
               formData={formData}
               selectedProducts={selectedProducts}
-              products={products} 
+              products={products}
               onSubmit={handleFormSubmit}
             />
           }

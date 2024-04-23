@@ -19,7 +19,6 @@ function PersonalInfo({ onNext }) {
       [name]: value,
     }));
   };
-
   const validateForm = () => {
     const newErrors = {};
     if (formData.firstName.trim() === "") {
@@ -34,14 +33,12 @@ function PersonalInfo({ onNext }) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleNext = () => {
     if (validateForm()) {
       onNext(formData);
       navigate("/productlist");
     }
   };
-
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
@@ -90,5 +87,4 @@ function PersonalInfo({ onNext }) {
     </div>
   );
 }
-
 export default PersonalInfo;
