@@ -1,44 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
+import { TextField, Button, Stack } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFormData,
+  setErrors,
+  selectPersonalInfo,
+} from "../redux/reducers/personalInfoSlice.js";
 import { useNavigate } from "react-router-dom";
-import { TextField } from "@mui/material";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-function PersonalInfo({ onNext }) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    dob: "",
-  });
-  const [errors, setErrors] = useState({});
+
+function PersonalInfo() {
+  const { formData, errors } = useSelector(selectPersonalInfo);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    dispatch(setFormData({ ...formData, [name]: value }));
   };
+
   const validateForm = () => {
     const newErrors = {};
-    if (formData.firstName.trim() === "") {
+    if (!formData.firstName.trim()) {
       newErrors.firstName = "First name is required";
     }
-    if (formData.lastName.trim() === "") {
+    if (!formData.lastName.trim()) {
       newErrors.lastName = "Last name is required";
     }
-    if (formData.dob.trim() === "") {
+    if (!formData.dob.trim()) {
       newErrors.dob = "Date of birth is required";
     }
-    setErrors(newErrors);
+    dispatch(setErrors(newErrors));
     return Object.keys(newErrors).length === 0;
   };
+
   const handleNext = () => {
     if (validateForm()) {
-      onNext(formData);
       navigate("/productlist");
     }
   };
+
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
@@ -69,9 +69,7 @@ function PersonalInfo({ onNext }) {
           name="dob"
           value={formData.dob}
           onChange={handleChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
+          InputLabelProps={{ shrink: true }}
           fullWidth
           error={!!errors.dob}
           helperText={errors.dob}
@@ -87,4 +85,5 @@ function PersonalInfo({ onNext }) {
     </div>
   );
 }
+
 export default PersonalInfo;

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,41 +9,48 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-function ProductList({ formData, onNext }) {
-  const [products, setProducts] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProducts,
+  setSelectedProducts,
+  selectProduct,
+} from "../redux/reducers/productSlice.js";
+import { useNavigate } from "react-router-dom";
+
+function ProductList() {
+  const { products, selectedProducts, status, error } = useSelector(
+    selectProduct
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const fetchData = () => {
-    fetch("https://dummyjson.com/products")
-      .then((response) => response.json())
-      .then((data) => {
-        const mappedProducts = data?.products?.map((product) => ({
-          id: product.id,
-          title: product.title,
-        }));
-        setProducts(mappedProducts);
-      });
-  };
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (status === "idle") {
+      dispatch(fetchProducts());
+    }
+  }, [status, dispatch]);
+
   const handleSelection = (productId) => {
     const index = selectedProducts.indexOf(productId);
     if (index === -1) {
-      setSelectedProducts([...selectedProducts, productId]);
+      dispatch(setSelectedProducts([...selectedProducts, productId]));
     } else {
-      const updatedSelection = selectedProducts.filter(
-        (id) => id !== productId
-      );
-      setSelectedProducts(updatedSelection);
+      const updatedSelection = selectedProducts.filter((id) => id !== productId);
+      dispatch(setSelectedProducts(updatedSelection));
     }
   };
 
   const handleNext = () => {
-    onNext(selectedProducts, products);
     navigate("/submitForm");
   };
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <Box

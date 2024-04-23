@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Button,
@@ -8,18 +7,28 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { selectPersonalInfo } from "../redux/reducers/personalInfoSlice.js.js";
+import { selectProduct } from "../redux/reducers/productSlice.js";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function SubmitForm({ formData, selectedProducts, onSubmit, products }) {
+function SubmitForm() {
+  const { formData } = useSelector(selectPersonalInfo);
+  const { selectedProducts, products } = useSelector(selectProduct);
   const navigate = useNavigate();
 
+  const selectedProductsData = selectedProducts.map((productId) => {
+    const product = products.find((p) => p.id === productId);
+    return { id: productId, title: product.title };
+  });
   const handleSubmit = () => {
     toast("Task submitted successfully");
     setTimeout(() => {
-      onSubmit();
       navigate("/");
     }, 3000);
+    console.log("Form submitted:", formData, selectedProductsData);
   };
 
   return (
@@ -49,21 +58,18 @@ function SubmitForm({ formData, selectedProducts, onSubmit, products }) {
         <strong>Selected Products:</strong>
       </Typography>
       <List>
-        {selectedProducts?.map((productId) => {
-          const product = products?.find((p) => p.id === productId);
-          return (
-            <ListItem key={productId} style={{ marginBottom: "10px" }}>
-              <ListItemText
-                primary={
-                  <React.Fragment>
-                    <strong>Product Name:</strong> {product?.title},{" "}
-                    <strong>ID:</strong> {productId}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-          );
-        })}
+        {selectedProductsData.map((productData) => (
+          <ListItem key={productData.id} style={{ marginBottom: "10px" }}>
+            <ListItemText
+              primary={
+                <React.Fragment>
+                  <strong>Product Name:</strong> {productData.title},{" "}
+                  <strong>ID:</strong> {productData.id}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+        ))}
       </List>
       <Button
         variant="contained"
